@@ -54,10 +54,13 @@ def convert_input_file_to_tensor_dataset(pred_config,
     all_attention_mask = []
     all_token_type_ids = []
 
+    input_sentences = []
+
     with open(pred_config.input_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             tokens = tokenizer.tokenize(line)
+            input_sentences.append(line)
             # Account for [CLS] and [SEP]
             special_tokens_count = 2
             if len(tokens) > args.max_seq_len - special_tokens_count:
@@ -93,7 +96,7 @@ def convert_input_file_to_tensor_dataset(pred_config,
 
     dataset = TensorDataset(all_input_ids, all_attention_mask, all_token_type_ids)
 
-    return dataset
+    return dataset, input_sentences
 
 
 def predict(pred_config):
@@ -104,7 +107,7 @@ def predict(pred_config):
     logger.info(args)
 
     # Convert input file to TensorDataset
-    dataset = convert_input_file_to_tensor_dataset(pred_config, args)
+    dataset, raw_data = convert_input_file_to_tensor_dataset(pred_config, args)
 
     # Predict
     sampler = SequentialSampler(dataset)
@@ -132,8 +135,10 @@ def predict(pred_config):
 
     # Write to output file
     with open(pred_config.output_file, "w", encoding="utf-8") as f:
-        for pred in preds:
-            f.write("{}\n".format(pred))
+        # for pred in preds:
+        #     f.write("{} - {}\n".format(pred))
+        for idx, pred in enumerate(preds):
+            f.write("{} - {}\n".format(raw_data[idx], pred))        
 
     logger.info("Prediction Done!")
 
