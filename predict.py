@@ -134,15 +134,21 @@ def predict(pred_config):
     preds = np.argmax(preds, axis=1)
 
     # Write to output file
+    cnt = 0
+    correct = 0 
     with open(pred_config.output_file, "w", encoding="utf-8") as f:
         # for pred in preds:
         #     f.write("{} - {}\n".format(pred))
         for idx, pred in enumerate(preds):
+            cnt += 1
             f.write("{} - {}\n".format(raw_data[idx], pred))        
-
+            if raw_data[idx] == pred:
+                correct += 1
+                
     logger.info("Prediction Done!")
+    logger.info(f"Accuracy: {correct/cnt:.2f}")
 
-
+    
 if __name__ == "__main__":
     init_logger()
     parser = argparse.ArgumentParser()
