@@ -142,9 +142,9 @@ def predict(pred_config):
         for idx, pred in enumerate(preds):
             cnt += 1
             f.write("{} - {}\n".format(raw_data[idx], pred))        
-            if raw_data[idx] == pred:
+            if int(raw_data[idx].split('\t')[-1].strip()) == int(pred):
                 correct += 1
-                
+    print(f'Accuracy: {correct/cnt:.2f}')              
     logger.info("Prediction Done!")
     logger.info(f"Accuracy: {correct/cnt:.2f}")
 
